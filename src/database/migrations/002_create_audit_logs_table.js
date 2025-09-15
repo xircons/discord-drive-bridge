@@ -1,7 +1,7 @@
 exports.up = function(knex) {
   return knex.schema.createTable('audit_logs', function(table) {
     table.increments('id').primary();
-    table.bigInteger('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE');
+    table.bigInteger('user_id').unsigned().notNullable().references('id').inTable('users').onDelete('CASCADE');
     table.string('action', 100).notNullable();
     table.string('resource_type', 50);
     table.text('resource_name');

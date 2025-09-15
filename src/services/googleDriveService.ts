@@ -7,8 +7,8 @@ import { GoogleDriveFile, GoogleDriveFolder, FileUploadOptions, SearchOptions } 
 export class GoogleDriveService {
   private drive: any;
 
-  constructor(private oauth2Client: OAuth2Client) {
-    this.drive = google.drive({ version: 'v3', auth: this.oauth2Client });
+  constructor(oauth2Client: OAuth2Client) {
+    this.drive = google.drive({ version: 'v3', auth: oauth2Client });
   }
 
   // File operations
@@ -420,7 +420,7 @@ export class GoogleDriveService {
   }
 
   // Chunked upload for large files (>100MB)
-  async uploadFileChunked(options: FileUploadOptions, onProgress?: (progress: number) => void): Promise<GoogleDriveFile> {
+  async uploadFileChunked(options: FileUploadOptions, _onProgress?: (progress: number) => void): Promise<GoogleDriveFile> {
     const startTime = Date.now();
     const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
     const fileSize = options.fileData.length;
@@ -465,9 +465,9 @@ export class GoogleDriveService {
         fields: 'id'
       }, {
         onUploadProgress: (evt: any) => {
-          if (onProgress && evt.bytesRead) {
+          if (_onProgress && evt.bytesRead) {
             const progress = Math.round((evt.bytesRead / fileSize) * 100);
-            onProgress(progress);
+            _onProgress(progress);
           }
         }
       });
@@ -491,9 +491,9 @@ export class GoogleDriveService {
 
         uploadedBytes += chunk.length;
         
-        if (onProgress) {
+        if (_onProgress) {
           const progress = Math.round((uploadedBytes / fileSize) * 100);
-          onProgress(progress);
+          _onProgress(progress);
         }
 
         Logger.debug('Uploaded chunk', {
@@ -532,7 +532,7 @@ export class GoogleDriveService {
   }
 
   // Chunked download for large files
-  async downloadFileChunked(fileId: string, onProgress?: (progress: number) => void): Promise<{ data: Buffer; mimeType: string; name: string; size: number }> {
+  async downloadFileChunked(fileId: string, _onProgress?: (progress: number) => void): Promise<{ data: Buffer; mimeType: string; name: string; size: number }> {
     const startTime = Date.now();
     
     try {
@@ -571,9 +571,9 @@ export class GoogleDriveService {
           chunks.push(chunk);
           downloadedBytes += chunk.length;
           
-          if (onProgress) {
+          if (_onProgress) {
             const progress = Math.round((downloadedBytes / fileSize) * 100);
-            onProgress(progress);
+            _onProgress(progress);
           }
         });
 

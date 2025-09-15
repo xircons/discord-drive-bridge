@@ -11,13 +11,13 @@ const securityConfig: SecurityConfig = {
   jwtSecret: env.JWT_SECRET,
   encryptionKey: env.DATABASE_ENCRYPTION_KEY,
   rateLimit: {
-    windowMs: parseInt(env.RATE_LIMIT_WINDOW),
-    max: parseInt(env.RATE_LIMIT_MAX),
+    windowMs: parseInt(env.RATE_LIMIT_WINDOW_MS),
+    max: parseInt(env.RATE_LIMIT_MAX_REQUESTS),
     message: 'Too many requests, please try again later.',
     standardHeaders: true,
     legacyHeaders: false
   },
-  maxFileSize: parseInt(env.MAX_FILE_SIZE), // 100MB
+  maxFileSize: parseInt(env.MAX_FILE_SIZE_MB) * 1024 * 1024, // Convert MB to bytes
   allowedFileTypes: [
     'image/jpeg', 'image/png', 'image/gif', 'image/webp',
     'text/plain', 'text/csv', 'application/json',

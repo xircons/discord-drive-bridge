@@ -78,7 +78,7 @@ export class EnhancedValidationService {
 
     // Additional Joi validation
     const schema = Joi.string()
-      .pattern(/^[a-zA-Z0-9][a-zA-Z0-9!#$&\-\^_]*\/[a-zA-Z0-9][a-zA-Z0-9!#$&\-\^_]*$/)
+      .pattern(/^[a-zA-Z0-9][a-zA-Z0-9!#$&\-^_]*\/[a-zA-Z0-9][a-zA-Z0-9!#$&\-^_]*$/)
       .required();
 
     const { error } = schema.validate(mimeType);

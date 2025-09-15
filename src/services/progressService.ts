@@ -137,7 +137,7 @@ export class ProgressService {
 
   public registerCallback(
     progressId: string,
-    callback: (progress: ProgressUpdate) => void
+    callback: (_progress: ProgressUpdate) => void
   ): void {
     this.updateCallbacks.set(progressId, callback);
   }
@@ -169,8 +169,8 @@ export class ProgressService {
   } {
     const active = Array.from(this.progressMap.values());
     
-    const byOperation = active.reduce((acc, progress) => {
-      acc[progress.operation] = (acc[progress.operation] || 0) + 1;
+    const byOperation = active.reduce((acc, _progress) => {
+      acc[_progress.operation] = (acc[_progress.operation] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 

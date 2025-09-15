@@ -1,6 +1,6 @@
 exports.up = function(knex) {
   return knex.schema.createTable('rate_limits', function(table) {
-    table.bigInteger('user_id').notNullable();
+    table.bigInteger('user_id').unsigned().notNullable();
     table.string('command', 50).notNullable();
     table.integer('count').defaultTo(1);
     table.timestamp('window_start').defaultTo(knex.fn.now());

@@ -2,8 +2,8 @@ const path = require('path');
 
 module.exports = {
   development: {
-    client: 'postgresql',
-    connection: process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/drivebot_dev',
+    client: 'mysql2',
+    connection: process.env.DATABASE_URL || 'mysql://discordbot:secure_password_123@localhost:3307/discordbot',
     migrations: {
       directory: path.join(__dirname, 'src/database/migrations'),
       tableName: 'knex_migrations'
@@ -18,7 +18,7 @@ module.exports = {
   },
 
   production: {
-    client: 'postgresql',
+    client: 'mysql2',
     connection: process.env.DATABASE_URL,
     migrations: {
       directory: path.join(__dirname, 'src/database/migrations'),
@@ -31,8 +31,6 @@ module.exports = {
       min: 2,
       max: 10
     },
-    ssl: {
-      rejectUnauthorized: false
-    }
+    ssl: false
   }
 };

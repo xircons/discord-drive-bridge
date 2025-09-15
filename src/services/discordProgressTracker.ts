@@ -5,7 +5,7 @@ import { Logger } from '../utils/logger';
 export class DiscordProgressTracker {
   private static instance: DiscordProgressTracker;
   private progressService: ProgressService;
-  private updateIntervals: Map<string, NodeJS.Timeout> = new Map();
+  private updateIntervals: Map<string, ReturnType<typeof setInterval>> = new Map();
 
   private constructor() {
     this.progressService = ProgressService.getInstance();
@@ -22,7 +22,7 @@ export class DiscordProgressTracker {
     interaction: ChatInputCommandInteraction,
     fileName: string,
     fileSize: number,
-    uploadFunction: (onProgress: (progress: number) => void) => Promise<any>
+    uploadFunction: (_onProgress: (progress: number) => void) => Promise<any>
   ): Promise<any> {
     const userId = interaction.user.id;
     const progressId = this.progressService.startProgress(
@@ -77,7 +77,7 @@ export class DiscordProgressTracker {
     interaction: ChatInputCommandInteraction,
     fileName: string,
     fileSize: number,
-    downloadFunction: (onProgress: (progress: number) => void) => Promise<any>
+    downloadFunction: (_onProgress: (progress: number) => void) => Promise<any>
   ): Promise<any> {
     const userId = interaction.user.id;
     const progressId = this.progressService.startProgress(

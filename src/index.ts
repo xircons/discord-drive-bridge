@@ -190,14 +190,103 @@ app.get('/auth/callback', SecurityMiddleware.csrfProtection, async (req, res) =>
       success: true
     });
 
-    res.json({
-      success: true,
-      data: {
-        message: 'Successfully connected to Google Drive!',
-        email: user.google_email
-      },
-      timestamp: new Date().toISOString()
-    });
+    // Redirect back to Discord server
+    const discordServerUrl = `https://discord.com/channels/${config.discord.guildId}`;
+    
+    // Create a success page that shows a message and redirects to Discord
+    const successHtml = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Google Drive Connected</title>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+            }
+            .container {
+                background: white;
+                border-radius: 12px;
+                padding: 2rem;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                text-align: center;
+                max-width: 400px;
+                width: 90%;
+            }
+            .success-icon {
+                font-size: 4rem;
+                color: #4CAF50;
+                margin-bottom: 1rem;
+            }
+            h1 {
+                color: #333;
+                margin-bottom: 1rem;
+                font-size: 1.5rem;
+            }
+            p {
+                color: #666;
+                margin-bottom: 2rem;
+                line-height: 1.5;
+            }
+            .discord-button {
+                background: #5865F2;
+                color: white;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 6px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                text-decoration: none;
+                display: inline-block;
+                transition: background-color 0.2s;
+            }
+            .discord-button:hover {
+                background: #4752C4;
+            }
+            .countdown {
+                color: #999;
+                font-size: 0.9rem;
+                margin-top: 1rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="success-icon">✅</div>
+            <h1>Google Drive Connected!</h1>
+            <p>Your Google Drive account (${user.google_email}) has been successfully connected to the Discord bot.</p>
+            <a href="${discordServerUrl}" class="discord-button">Return to Discord Server</a>
+            <div class="countdown">Redirecting automatically in <span id="countdown">5</span> seconds...</div>
+        </div>
+        
+        <script>
+            let timeLeft = 5;
+            const countdownElement = document.getElementById('countdown');
+            
+            const timer = setInterval(() => {
+                timeLeft--;
+                countdownElement.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    window.location.href = '${discordServerUrl}';
+                }
+            }, 1000);
+        </script>
+    </body>
+    </html>
+    `;
+
+    res.send(successHtml);
     return;
 
   } catch (error) {

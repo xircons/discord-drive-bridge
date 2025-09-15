@@ -21,9 +21,9 @@ const envSchema = z.object({
   
   // Security Configuration
   JWT_SECRET: z.string().min(32, 'JWT secret must be at least 32 characters'),
-  RATE_LIMIT_WINDOW: z.string().regex(/^\d+$/, 'Rate limit window must be a number').optional().default('900000'),
-  RATE_LIMIT_MAX: z.string().regex(/^\d+$/, 'Rate limit max must be a number').optional().default('100'),
-  MAX_FILE_SIZE: z.string().regex(/^\d+$/, 'Max file size must be a number').optional().default('104857600'),
+  RATE_LIMIT_WINDOW_MS: z.string().regex(/^\d+$/, 'Rate limit window must be a number').optional().default('900000'),
+  RATE_LIMIT_MAX_REQUESTS: z.string().regex(/^\d+$/, 'Rate limit max must be a number').optional().default('100'),
+  MAX_FILE_SIZE_MB: z.string().regex(/^\d+$/, 'Max file size must be a number').optional().default('100'),
   
   // Server Configuration
   PORT: z.string().regex(/^\d+$/, 'Port must be a number').optional().default('3000'),
@@ -35,7 +35,7 @@ const envSchema = z.object({
   LOG_FILE: z.string().optional().default('logs/app.log'),
   
   // Google Drive Scopes
-  GOOGLE_DRIVE_SCOPES: z.string().optional().default('https://www.googleapis.com/auth/drive.file,https://www.googleapis.com/auth/drive.metadata.readonly')
+  GOOGLE_DRIVE_SCOPES: z.string().optional().default('https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile')
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;
@@ -49,9 +49,10 @@ export function validateEnvironment(): EnvConfig {
         `${err.path.join('.')}: ${err.message}`
       ).join('\n');
       
-      console.error('❌ Environment validation failed:');
-      console.error(errorMessages);
-      console.error('\nPlease check your .env file and ensure all required variables are set correctly.');
+      // Use process.stderr for error output instead of console
+      process.stderr.write('❌ Environment validation failed:\n');
+      process.stderr.write(errorMessages + '\n');
+      process.stderr.write('\nPlease check your .env file and ensure all required variables are set correctly.\n');
       
       process.exit(1);
     }

@@ -3,11 +3,8 @@ import { config } from '../config';
 import { User, AuditLog, RateLimit } from '../types';
 
 const db = knex({
-  client: 'postgresql',
-  connection: {
-    connectionString: config.database.url,
-    ssl: config.database.ssl ? { rejectUnauthorized: false } : false
-  },
+  client: 'mysql2',
+  connection: config.database.url,
   pool: config.database.pool
 });
 
@@ -16,13 +13,16 @@ export default db;
 // Database models
 export class UserModel {
   static async create(userData: Omit<User, 'created_at' | 'updated_at'>): Promise<User> {
-    const [user] = await db('users')
-      .insert({
-        ...userData,
-        created_at: new Date(),
-        updated_at: new Date()
-      })
-      .returning('*');
+    const insertData = {
+      ...userData,
+      created_at: new Date(),
+      updated_at: new Date()
+    };
+    
+    await db('users').insert(insertData);
+    
+    // Fetch the created user
+    const user = await db('users').where('id', userData.id.toString()).first();
     return user;
   }
 
@@ -37,13 +37,17 @@ export class UserModel {
   }
 
   static async update(id: bigint, updates: Partial<User>): Promise<User | null> {
-    const [user] = await db('users')
+    const updateData = {
+      ...updates,
+      updated_at: new Date()
+    };
+    
+    await db('users')
       .where('id', id.toString())
-      .update({
-        ...updates,
-        updated_at: new Date()
-      })
-      .returning('*');
+      .update(updateData);
+    
+    // Fetch the updated user
+    const user = await db('users').where('id', id.toString()).first();
     return user || null;
   }
 
@@ -62,12 +66,15 @@ export class UserModel {
 
 export class AuditLogModel {
   static async create(logData: Omit<AuditLog, 'id' | 'created_at'>): Promise<AuditLog> {
-    const [log] = await db('audit_logs')
-      .insert({
-        ...logData,
-        created_at: new Date()
-      })
-      .returning('*');
+    const insertData = {
+      ...logData,
+      created_at: new Date()
+    };
+    
+    const [insertId] = await db('audit_logs').insert(insertData);
+    
+    // Fetch the created log
+    const log = await db('audit_logs').where('id', insertId).first();
     return log;
   }
 

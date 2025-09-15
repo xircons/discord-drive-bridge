@@ -13,8 +13,12 @@ export class ValidationService {
     }
 
     // Check for dangerous characters
-    const dangerousChars = /[<>:"/\\|?*\x00-\x1f]/;
-    if (dangerousChars.test(fileName)) {
+    const dangerousChars = /[<>:"/\\|?*]/;
+    const hasControlChars = fileName.split('').some(char => {
+      const code = char.charCodeAt(0);
+      return code >= 0 && code <= 31;
+    });
+    if (dangerousChars.test(fileName) || hasControlChars) {
       return { valid: false, error: 'File name contains invalid characters' };
     }
 
@@ -42,8 +46,12 @@ export class ValidationService {
     }
 
     // Check for dangerous characters
-    const dangerousChars = /[<>:"/\\|?*\x00-\x1f]/;
-    if (dangerousChars.test(folderName)) {
+    const dangerousChars = /[<>:"/\\|?*]/;
+    const hasControlChars = folderName.split('').some(char => {
+      const code = char.charCodeAt(0);
+      return code >= 0 && code <= 31;
+    });
+    if (dangerousChars.test(folderName) || hasControlChars) {
       return { valid: false, error: 'Folder name contains invalid characters' };
     }
 

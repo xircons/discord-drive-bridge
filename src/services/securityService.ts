@@ -204,7 +204,10 @@ export class SecurityService {
     }
 
     // Remove null bytes and control characters
-    let sanitized = input.replace(/[\x00-\x1F\x7F]/g, '');
+    let sanitized = input.split('').filter(char => {
+      const code = char.charCodeAt(0);
+      return code > 31 && code !== 127;
+    }).join('');
     
     // Remove potential SQL injection patterns
     sanitized = sanitized.replace(/['";\\]/g, '');

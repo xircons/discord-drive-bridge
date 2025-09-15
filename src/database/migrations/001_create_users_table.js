@@ -1,6 +1,6 @@
 exports.up = function(knex) {
   return knex.schema.createTable('users', function(table) {
-    table.bigInteger('id').primary().comment('Discord user ID');
+    table.bigInteger('id').unsigned().primary().comment('Discord user ID');
     table.string('google_email', 255).unique().notNullable();
     table.text('encrypted_refresh_token').notNullable();
     table.text('encrypted_access_token').notNullable();

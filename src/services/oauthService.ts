@@ -23,10 +23,12 @@ export class OAuthService {
     const codeChallenge = EncryptionService.generateCodeChallenge(codeVerifier);
     const state = EncryptionService.generateRandomString(32);
 
-    console.log("[OAuth] Generating auth URL for user:", userId.toString());
-    console.log("[OAuth] Redirect URI:", config.google.redirectUri);
-    console.log("[OAuth] Client ID:", config.google.clientId);
-    console.log("[OAuth] Scopes:", config.google.scopes);
+    Logger.debug("Generating auth URL for user", { userId: userId.toString() });
+    Logger.debug("OAuth configuration", { 
+      redirectUri: config.google.redirectUri,
+      clientId: config.google.clientId,
+      scopes: config.google.scopes
+    });
 
     const authUrl = this.oauth2Client.generateAuthUrl({
       access_type: 'offline',
@@ -37,9 +39,11 @@ export class OAuthService {
       prompt: 'consent'
     });
 
-    console.log("[OAuth] Generated auth URL:", authUrl);
-    console.log("[OAuth] Code verifier length:", codeVerifier.length);
-    console.log("[OAuth] State:", `${userId}:${state}`);
+    Logger.debug("Generated auth URL", { 
+      authUrl, 
+      codeVerifierLength: codeVerifier.length,
+      state: `${userId}:${state}`
+    });
 
     Logger.info('OAuth URL generated', { userId: userId.toString() });
 
@@ -79,11 +83,22 @@ export class OAuthService {
         config.google.redirectUri
       );
 
-      console.log("[OAuth] Exchanging code with redirect_uri:", config.google.redirectUri);
-      console.log("[OAuth] Client ID:", config.google.clientId);
-      console.log("[OAuth] Code length:", code.length);
-      console.log("[OAuth] Code verifier present:", !!codeVerifier);
-      console.log("[OAuth] State:", state);
+      // Log environment variables for verification
+      Logger.debug("Environment variables check", {
+        GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+        GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ? "***HIDDEN***" : "MISSING",
+        GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI,
+        config_client_id: config.google.clientId,
+        config_redirect_uri: config.google.redirectUri
+      });
+
+      Logger.debug("Token exchange details", {
+        redirectUri: config.google.redirectUri,
+        clientId: config.google.clientId,
+        codeLength: code.length,
+        hasCodeVerifier: !!codeVerifier,
+        state
+      });
 
       Logger.info('Created OAuth2Client for token exchange', {
         clientId: config.google.clientId,
@@ -95,6 +110,15 @@ export class OAuthService {
         code,
         codeVerifier: codeVerifier,
         redirect_uri: config.google.redirectUri
+      });
+
+      // Log the response from Google's /token endpoint
+      Logger.debug("Google token response", {
+        hasAccessToken: !!tokens.access_token,
+        hasRefreshToken: !!tokens.refresh_token,
+        tokenType: tokens.token_type,
+        expiresIn: tokens.expiry_date,
+        scope: tokens.scope
       });
 
       Logger.info('Received tokens from Google', {
@@ -121,7 +145,7 @@ export class OAuthService {
 
       Logger.info('Set credentials on OAuth2Client, fetching user info');
 
-      // Get user info from Google using the exchange client
+      // Get user info from Google using OAuth2 API
       const oauth2 = google.oauth2({ version: 'v2', auth: exchangeClient });
       const userInfo = await oauth2.userinfo.get();
 
@@ -182,7 +206,7 @@ export class OAuthService {
         }
       };
     } catch (error: any) {
-      console.error("[OAuth] Token exchange failed:", {
+      Logger.error("Token exchange failed", error as Error, {
         message: error.message,
         stack: error.stack,
         response: error.response?.data,
