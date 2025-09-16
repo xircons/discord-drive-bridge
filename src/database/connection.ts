@@ -121,7 +121,7 @@ export class RateLimitModel {
       })
       .onConflict(['user_id', 'command'])
       .merge({
-        count: db.raw('"rate_limits"."count" + 1')
+        count: db.raw('`rate_limits`.`count` + 1')
       })
       .returning('*');
     return rateLimit;

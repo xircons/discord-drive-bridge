@@ -201,10 +201,19 @@ app.get('/auth/callback', SecurityMiddleware.csrfProtection, async (req, res) =>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Google Drive Connected</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
         <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
             body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                font-family: 'Nunito Sans', sans-serif;
+                background: #2a2a2a;
                 margin: 0;
                 padding: 0;
                 display: flex;
@@ -212,70 +221,149 @@ app.get('/auth/callback', SecurityMiddleware.csrfProtection, async (req, res) =>
                 align-items: center;
                 min-height: 100vh;
             }
+
             .container {
-                background: white;
-                border-radius: 12px;
-                padding: 2rem;
-                box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                background: #3a3a3a;
+                border-radius: 16px;
+                padding: 3rem 2.5rem;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.3);
                 text-align: center;
-                max-width: 400px;
+                max-width: 420px;
                 width: 90%;
+                border: 1px solid #4a4a4a;
             }
-            .success-icon {
-                font-size: 4rem;
-                color: #4CAF50;
-                margin-bottom: 1rem;
+
+            .success-indicator {
+                width: 64px;
+                height: 64px;
+                margin: 0 auto 2rem;
+                background: white;
+                border-radius: 50%;
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                animation: scaleIn 0.5s ease-out;
             }
+
+            @keyframes scaleIn {
+                0% {
+                    transform: scale(0);
+                    opacity: 0;
+                }
+                100% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+
+            .success-indicator::after {
+                content: '';
+                width: 20px;
+                height: 10px;
+                border: 3px solid #2a2a2a;
+                border-top: none;
+                border-right: none;
+                transform: rotate(-45deg);
+                animation: checkmarkDraw 0.3s ease-out 0.2s both;
+            }
+
+            @keyframes checkmarkDraw {
+                0% {
+                    width: 0;
+                    height: 0;
+                    opacity: 0;
+                }
+                50% {
+                    width: 10px;
+                    height: 0;
+                    opacity: 1;
+                }
+                100% {
+                    width: 20px;
+                    height: 10px;
+                    opacity: 1;
+                }
+            }
+
             h1 {
-                color: #333;
+                color: #ffffff;
                 margin-bottom: 1rem;
-                font-size: 1.5rem;
+                font-size: 1.8rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
             }
+
             p {
-                color: #666;
-                margin-bottom: 2rem;
-                line-height: 1.5;
+                color: #b0b0b0;
+                margin-bottom: 2.5rem;
+                line-height: 1.6;
+                font-size: 1rem;
             }
+
             .discord-button {
-                background: #5865F2;
-                color: white;
-                padding: 12px 24px;
+                background: white;
+                color: #2a2a2a;
+                padding: 14px 32px;
                 border: none;
-                border-radius: 6px;
+                border-radius: 8px;
                 font-size: 1rem;
                 font-weight: 600;
                 cursor: pointer;
                 text-decoration: none;
                 display: inline-block;
-                transition: background-color 0.2s;
+                transition: opacity 0.2s ease;
+                font-family: 'Nunito Sans', sans-serif;
             }
+
             .discord-button:hover {
-                background: #4752C4;
+                opacity: 0.9;
             }
+
             .countdown {
-                color: #999;
+                color: #888;
                 font-size: 0.9rem;
-                margin-top: 1rem;
+                margin-top: 1.5rem;
+            }
+
+            #countdown {
+                color: #ffffff;
+                font-weight: 600;
+            }
+
+            /* Responsive design */
+            @media (max-width: 480px) {
+                .container {
+                    padding: 2rem 1.5rem;
+                    margin: 1rem;
+                }
+                
+                h1 {
+                    font-size: 1.5rem;
+                }
+                
+                .success-indicator {
+                    width: 56px;
+                    height: 56px;
+                }
             }
         </style>
     </head>
     <body>
         <div class="container">
-            <div class="success-icon">✅</div>
+            <div class="success-indicator"></div>
             <h1>Google Drive Connected!</h1>
             <p>Your Google Drive account (${user.google_email}) has been successfully connected to the Discord bot.</p>
             <a href="${discordServerUrl}" class="discord-button">Return to Discord Server</a>
             <div class="countdown">Redirecting automatically in <span id="countdown">5</span> seconds...</div>
         </div>
-        
+
         <script>
             let timeLeft = 5;
             const countdownElement = document.getElementById('countdown');
-            
             const timer = setInterval(() => {
                 timeLeft--;
                 countdownElement.textContent = timeLeft;
-                
                 if (timeLeft <= 0) {
                     clearInterval(timer);
                     window.location.href = '${discordServerUrl}';

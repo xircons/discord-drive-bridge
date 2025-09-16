@@ -76,14 +76,14 @@ describe('Environment Validation', () => {
         JWT_SECRET: 'a'.repeat(32)
       };
 
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      const stderrSpy = jest.spyOn(process.stderr, 'write').mockImplementation();
       const processSpy = jest.spyOn(process, 'exit').mockImplementation();
 
       expect(() => validateEnvironment()).toThrow();
-      expect(consoleSpy).toHaveBeenCalledWith('❌ Environment validation failed:');
+      expect(stderrSpy).toHaveBeenCalledWith('❌ Environment validation failed:\n');
       expect(processSpy).toHaveBeenCalledWith(1);
 
-      consoleSpy.mockRestore();
+      stderrSpy.mockRestore();
       processSpy.mockRestore();
     });
 
@@ -100,14 +100,14 @@ describe('Environment Validation', () => {
         JWT_SECRET: 'a'.repeat(32)
       };
 
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      const stderrSpy = jest.spyOn(process.stderr, 'write').mockImplementation();
       const processSpy = jest.spyOn(process, 'exit').mockImplementation();
 
       expect(() => validateEnvironment()).toThrow();
-      expect(consoleSpy).toHaveBeenCalledWith('❌ Environment validation failed:');
+      expect(stderrSpy).toHaveBeenCalledWith('❌ Environment validation failed:\n');
       expect(processSpy).toHaveBeenCalledWith(1);
 
-      consoleSpy.mockRestore();
+      stderrSpy.mockRestore();
       processSpy.mockRestore();
     });
 
@@ -124,14 +124,14 @@ describe('Environment Validation', () => {
         JWT_SECRET: 'a'.repeat(32)
       };
 
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      const stderrSpy = jest.spyOn(process.stderr, 'write').mockImplementation();
       const processSpy = jest.spyOn(process, 'exit').mockImplementation();
 
       expect(() => validateEnvironment()).toThrow();
-      expect(consoleSpy).toHaveBeenCalledWith('❌ Environment validation failed:');
+      expect(stderrSpy).toHaveBeenCalledWith('❌ Environment validation failed:\n');
       expect(processSpy).toHaveBeenCalledWith(1);
 
-      consoleSpy.mockRestore();
+      stderrSpy.mockRestore();
       processSpy.mockRestore();
     });
 
@@ -148,14 +148,14 @@ describe('Environment Validation', () => {
         JWT_SECRET: 'a'.repeat(32)
       };
 
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      const stderrSpy = jest.spyOn(process.stderr, 'write').mockImplementation();
       const processSpy = jest.spyOn(process, 'exit').mockImplementation();
 
       expect(() => validateEnvironment()).toThrow();
-      expect(consoleSpy).toHaveBeenCalledWith('❌ Environment validation failed:');
+      expect(stderrSpy).toHaveBeenCalledWith('❌ Environment validation failed:\n');
       expect(processSpy).toHaveBeenCalledWith(1);
 
-      consoleSpy.mockRestore();
+      stderrSpy.mockRestore();
       processSpy.mockRestore();
     });
 
@@ -194,14 +194,14 @@ describe('Environment Validation', () => {
         NODE_ENV: 'invalid_env' // Invalid value
       };
 
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      const stderrSpy = jest.spyOn(process.stderr, 'write').mockImplementation();
       const processSpy = jest.spyOn(process, 'exit').mockImplementation();
 
       expect(() => validateEnvironment()).toThrow();
-      expect(consoleSpy).toHaveBeenCalledWith('❌ Environment validation failed:');
+      expect(stderrSpy).toHaveBeenCalledWith('❌ Environment validation failed:\n');
       expect(processSpy).toHaveBeenCalledWith(1);
 
-      consoleSpy.mockRestore();
+      stderrSpy.mockRestore();
       processSpy.mockRestore();
     });
   });
